@@ -1,26 +1,51 @@
-import React from "react";
-import logo from "./logo.svg";
-import "./App.scss";
+import { useState } from "react";
+import {
+  TextField,
+  Button,
+  Container,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
+import { useWeather } from "./hooks/useWeather";
+import { WeatherCard } from "./components/WeatherCard";
 
-function App() {
+const App = () => {
+  const [city, setCity] = useState("");
+  const { weather, error, loading, getWeather } = useWeather();
+
+  const handleSearch = () => {
+    if (city.trim()) getWeather(city.trim());
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container maxWidth="sm" sx={{ mt: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        Weather App
+      </Typography>
+      <TextField
+        fullWidth
+        label="Enter city"
+        variant="outlined"
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+      />
+      <Button
+        variant="contained"
+        fullWidth
+        sx={{ mt: 2 }}
+        onClick={handleSearch}
+      >
+        Search
+      </Button>
+      {loading && <CircularProgress sx={{ mt: 2 }} />}
+      {error && (
+        <Typography color="error" sx={{ mt: 2 }}>
+          {error}
+        </Typography>
+      )}
+      {weather && <WeatherCard weather={weather} />}
+    </Container>
   );
-}
+};
 
 export default App;
