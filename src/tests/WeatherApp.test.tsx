@@ -1,21 +1,23 @@
-/* eslint-disable testing-library/no-wait-for-multiple-assertions */
+// WeatherApp.test.tsx
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import App from "../App";
-import * as weatherService from "../services/weatherService";
+import axios from "axios";
 
-jest.mock("../services/weatherService");
+jest.mock("axios");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe("Weather App", () => {
   const mockWeather = {
-    city: "London",
-    temperature: 15,
-    description: "clear sky",
-    icon: "01d",
-    updatedAt: new Date().toISOString(),
+    data: {
+      name: "London",
+      main: { temp: 15 },
+      weather: [{ description: "clear sky", icon: "01d" }],
+    },
   };
 
   it("shows weather data correctly", async () => {
-    (weatherService.fetchWeather as jest.Mock).mockResolvedValue(mockWeather);
+    mockedAxios.get.mockResolvedValueOnce(mockWeather);
+
     render(<App />);
 
     fireEvent.change(screen.getByLabelText(/enter city/i), {
@@ -31,9 +33,8 @@ describe("Weather App", () => {
   });
 
   it("shows error for invalid city", async () => {
-    (weatherService.fetchWeather as jest.Mock).mockRejectedValue(
-      new Error("Not found")
-    );
+    mockedAxios.get.mockRejectedValueOnce(new Error("City not found"));
+
     render(<App />);
 
     fireEvent.change(screen.getByLabelText(/enter city/i), {
