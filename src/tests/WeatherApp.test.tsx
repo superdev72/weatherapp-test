@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-wait-for-multiple-assertions */
 // WeatherApp.test.tsx
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import App from "../App";
